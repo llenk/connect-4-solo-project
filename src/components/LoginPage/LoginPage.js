@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { triggerLogin, formError, clearError } from '../../redux/actions/loginActions';
+import { Grid } from '@material-ui/core';
 
+import RulesSide from '../RulesSide/RulesSide';
 
 const mapStateToProps = state => ({
   user: state.user,
@@ -23,7 +25,7 @@ class LoginPage extends Component {
     this.props.dispatch(clearError());
   }
 
-  
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.user.userName) {
       this.props.history.push('/user');
@@ -53,7 +55,7 @@ class LoginPage extends Component {
           className="alert"
           role="alert"
         >
-          { this.props.login.message }
+          {this.props.login.message}
         </h2>
       );
     }
@@ -62,42 +64,61 @@ class LoginPage extends Component {
 
   render() {
     return (
-      <div>
-        { this.renderAlert() }
-        <form onSubmit={this.login}>
-          <h1>Login</h1>
+      <Grid container>
+        <Grid item md={8}>
+          <RulesSide />
+        </Grid>
+        <Grid item md={4}>
           <div>
-            <label htmlFor="username">
-              Username:
-              <input
-                type="text"
-                name="username"
-                value={this.state.username}
-                onChange={this.handleInputChangeFor('username')}
-              />
-            </label>
+            {this.renderAlert()}
+            <form onSubmit={this.login} className="loReg">
+              <h1>Login</h1>
+              <Grid container>
+                <Grid item xs={4}>
+                  <label htmlFor="username">
+                    Username:
+                  </label>
+                </Grid>
+                <Grid item xs={8}>
+                  <input
+                    type="text"
+                    name="username"
+                    value={this.state.username}
+                    onChange={this.handleInputChangeFor('username')}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid item xs={4}>
+                  <label htmlFor="password">
+                    Password:
+                </label>
+                </Grid>
+                <Grid item xs={8}>
+                  <input
+                    type="password"
+                    name="password"
+                    value={this.state.password}
+                    onChange={this.handleInputChangeFor('password')}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid item xs={4}>
+                  <Link to="/register">Register</Link>
+                </Grid>
+                <Grid item xs={8}>
+                  <input
+                    type="submit"
+                    name="submit"
+                    value="Log In"
+                  />
+                </Grid>
+              </Grid>
+            </form>
           </div>
-          <div>
-            <label htmlFor="password">
-              Password:
-              <input
-                type="password"
-                name="password"
-                value={this.state.password}
-                onChange={this.handleInputChangeFor('password')}
-              />
-            </label>
-          </div>
-          <div>
-            <input
-              type="submit"
-              name="submit"
-              value="Log In"
-            />
-            <Link to="/register">Register</Link>
-          </div>
-        </form>
-      </div>
+        </Grid>
+      </Grid>
     );
   }
 }
