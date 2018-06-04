@@ -2,15 +2,14 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Redirect,
   Switch,
 } from 'react-router-dom';
 
-import Header from './components/Header/Header';
 import LoginPage from './components/LoginPage/LoginPage';
 import RegisterPage from './components/RegisterPage/RegisterPage';
-import UserPage from './components/UserPage/UserPage';
-import InfoPage from './components/InfoPage/InfoPage';
+import UserHome from './components/UserHome/UserHome';
+import GamePlay from './components/GamePlay/GamePlay';
+import ResultPage from './components/ResultPage/ResultPage';
 
 import './styles/main.css';
 
@@ -19,9 +18,8 @@ const App = () => (
     {/* <Header title="Project Base" /> */}
     <Router>
       <Switch>
-        <Redirect exact from="/" to="/home" />
         <Route
-          path="/home"
+          exact path="/"
           component={LoginPage}
         />
         <Route
@@ -29,12 +27,16 @@ const App = () => (
           component={RegisterPage}
         />
         <Route
-          path="/user"
-          component={UserPage}
+          path="/home"
+          component={UserHome}
         />
         <Route
-          path="/info"
-          component={InfoPage}
+          path="/game"
+          component={GamePlay}
+        />
+        <Route 
+          page="/result"
+          component={ResultPage}
         />
         {/* OTHERWISE (no path!) */}
         <Route render={() => <h1>404</h1>} />
