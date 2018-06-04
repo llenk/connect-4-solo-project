@@ -5,6 +5,7 @@ import { USER_ACTIONS } from '../../redux/actions/userActions';
 import { triggerLogout } from '../../redux/actions/loginActions';
 
 import { Grid, Button } from '@material-ui/core';
+import './UserHome.css';
 
 const mapStateToProps = state => ({
   user: state.user,
@@ -33,9 +34,9 @@ class UserHome extends Component {
       content = (
         <div>
           <Grid container>
-            <Grid item xs={11}>
+            <Grid item lg={11} md={10} xs={9}>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item lg={1} md={2} xs={3}>
               <Button
                 onClick={this.logout}
               >
@@ -44,12 +45,41 @@ class UserHome extends Component {
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item xs={7}>
-              <h1>
-                Welcome to Connect 4, {this.props.user.userName}!
+            <Grid item lg={7}>
+              <div className="welcomeDiv">
+                <h1>
+                  Welcome to Connect 4, {this.props.user.userName.username}!
               </h1>
+                <h3>
+                  Your stats are:
+              </h3>
+                <p>
+                  Wins against an easy computer: {this.props.user.userName.wins_easy_computer}
+                </p>
+                <p>
+                  Losses against an easy computer: {this.props.user.userName.losses_easy_computer}
+                </p>
+                <p>
+                  Wins against a human: {this.props.user.userName.wins_human}
+                </p>
+                <p>
+                  Losses against a human: {this.props.user.userName.losses_human}
+                </p>
+                <h3>
+                  The rules are:
+              </h3>
+                <p>
+                  The object of Connect 4 is to get four pieces in a row. This can be horizontally, vertically, or diagonally.
+                </p>
+                <p>
+                  The game begins when the first player drops one checker in a column. They do this by clicking the column, and the checker will drop to the lowest unoccupied spot in that column. The second player then plays, and play alternates from there.
+                </p>
+                <p>
+                  For strategy, the most valuable column is usually the middle column, since the most rows of four can be built from there.
+                </p>
+              </div>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item lg={5}>
             </Grid>
           </Grid>
         </div>
