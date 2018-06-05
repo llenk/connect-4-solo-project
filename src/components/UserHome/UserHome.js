@@ -12,6 +12,12 @@ const mapStateToProps = state => ({
 });
 
 class UserHome extends Component {
+  constructor() {
+    super();
+    this.state = {
+      message: '',
+    };
+  }
   componentDidMount() {
     this.props.dispatch({ type: USER_ACTIONS.FETCH_USER });
   }
@@ -25,6 +31,10 @@ class UserHome extends Component {
   logout = () => {
     this.props.dispatch(triggerLogout());
     this.props.history.push('');
+  }
+
+  humanGame = () => {
+    this.props.dispatch({type: 'HUMAN_GAME_START', payload: this.props.user.userInfo.id});
   }
 
   render() {
@@ -45,7 +55,7 @@ class UserHome extends Component {
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item lg={7}>
+            <Grid item xs={12} lg={7}>
               <div className="welcomeDiv">
                 <h1>
                   Welcome to Connect 4, {this.props.user.userInfo.username}!
@@ -79,12 +89,15 @@ class UserHome extends Component {
                 </p>
               </div>
             </Grid>
-            <Grid item lg={5}>
+            <Grid item xs={12} lg={5}>
               <div className="gameDiv">
                 <h1>
                   Ready to Play?
                 </h1>
-                <Button variant="contained" className="butt">
+                <h3>
+                  {this.state.message}
+                </h3>
+                <Button variant="contained" className="butt" onClick={this.humanGame}>
                   Play against human
                 </Button>
                 <br />

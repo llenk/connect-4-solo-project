@@ -33,7 +33,7 @@ class RegisterPage extends Component {
       axios.post('/api/user/register/', body)
         .then((response) => {
           if (response.status === 201) {
-            this.props.history.push('/home');
+            this.props.history.push('/');
           } else {
             this.setState({
               message: 'Ooops! That didn\'t work. The username might already be taken. Try again!',
