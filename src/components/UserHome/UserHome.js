@@ -24,13 +24,13 @@ class UserHome extends Component {
 
   logout = () => {
     this.props.dispatch(triggerLogout());
-    // this.props.history.push('home');
+    this.props.history.push('');
   }
 
   render() {
     let content = null;
     console.log(this.props.user);
-    if (this.props.user.userName) {
+    if (this.props.user.userInfo) {
       content = (
         <div>
           <Grid container>
@@ -48,26 +48,26 @@ class UserHome extends Component {
             <Grid item lg={7}>
               <div className="welcomeDiv">
                 <h1>
-                  Welcome to Connect 4, {this.props.user.userName.username}!
-              </h1>
+                  Welcome to Connect 4, {this.props.user.userInfo.username}!
+                </h1>
                 <h3>
                   Your stats are:
-              </h3>
+                </h3>
                 <p>
-                  Wins against an easy computer: {this.props.user.userName.wins_easy_computer}
+                  Wins against an easy computer: {this.props.user.userInfo.wins_easy_computer}
                 </p>
                 <p>
-                  Losses against an easy computer: {this.props.user.userName.losses_easy_computer}
+                  Losses against an easy computer: {this.props.user.userInfo.losses_easy_computer}
                 </p>
                 <p>
-                  Wins against a human: {this.props.user.userName.wins_human}
+                  Wins against a human: {this.props.user.userInfo.wins_human}
                 </p>
                 <p>
-                  Losses against a human: {this.props.user.userName.losses_human}
+                  Losses against a human: {this.props.user.userInfo.losses_human}
                 </p>
                 <h3>
                   The rules are:
-              </h3>
+                </h3>
                 <p>
                   The object of Connect 4 is to get four pieces in a row. This can be horizontally, vertically, or diagonally.
                 </p>
@@ -80,6 +80,18 @@ class UserHome extends Component {
               </div>
             </Grid>
             <Grid item lg={5}>
+              <div className="gameDiv">
+                <h1>
+                  Ready to Play?
+                </h1>
+                <Button variant="contained" className="butt">
+                  Play against human
+                </Button>
+                <br />
+                <Button variant="contained" className="butt">
+                  Play against easy computer
+                </Button>
+              </div>
             </Grid>
           </Grid>
         </div>

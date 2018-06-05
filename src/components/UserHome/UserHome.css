@@ -1,5 +1,5 @@
 .welcomeDiv {
-    background: rgba(77, 44, 115, .5);
+    background: #80659F;
     margin: 20px;
     padding: 20px;
     border-radius: 10px;
@@ -7,4 +7,17 @@
 .welcomeDiv h1 {
     margin: 0px;
     padding: 0px 0px 10px 0px;
+}
+.gameDiv {
+    background: #9DCF7D;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
+}
+.gameDiv h1 {
+    margin: 0px;
+    padding: 0px 0px 10px 0px;
+}
+.butt {
+    margin: 10px !important;
 }

@@ -1,10 +1,10 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: rgba(8, 86, 161, .2);
+    background: #BECAD5;
 }
 
 .loReg {
-    background-color: rgba(170, 124, 57, .6);
+    background-color: #9DCF7D;
     height: 250px;
     margin: 20px;
     padding: 20px;
@@ -39,12 +39,6 @@ input[type="submit"] {
 
 .message:nth-child(even) {
     background-color: #f8f8f8;
-}
-
-.navbar {
-  background-color: #00acb0;
-  width: 100%;
-  border-radius: 0px;
 }
 
 ul {

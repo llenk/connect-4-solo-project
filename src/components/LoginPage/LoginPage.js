@@ -27,7 +27,7 @@ class LoginPage extends Component {
 
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.user.userName) {
+    if (nextProps.user.userInfo) {
       this.props.history.push('/home');
     }
   }
