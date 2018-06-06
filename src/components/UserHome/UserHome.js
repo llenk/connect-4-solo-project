@@ -35,6 +35,7 @@ class UserHome extends Component {
 
   humanGame = () => {
     this.props.dispatch({type: 'HUMAN_GAME_START', payload: this.props.user.userInfo.id});
+    this.props.history.push('/game');
   }
 
   render() {
