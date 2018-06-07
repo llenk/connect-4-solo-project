@@ -88,6 +88,104 @@ const checkWonHuman = (board) => {
   return '';
 }
 
+const setWonHuman = (id, val, board) => {
+  if (val == 'one') {
+    let queryText = `UPDATE "human_game"
+    SET "won" = $2, "turn" = $3
+    WHERE "id" = $1;`;
+    pool.query(queryText, [id, val, computerID]
+    ).then(response => {
+      let checkWinnerQueryText = `SELECT * FROM "person"
+        WHERE "id" = $1;`;
+      pool.query(checkWinnerQueryText, [board['player_' + val]]
+      ).then(winnerResponse => {
+        let updateWinnerQueryText = `UPDATE "person"
+          SET "wins_human" = $1
+          WHERE "id" = $2;`;
+        console.log(winnerResponse);
+        pool.query(updateWinnerQueryText, [winnerResponse.rows[0].wins_human + 1, winnerResponse.rows[0].id]
+        ).then(response => {
+          console.log('Set winner');
+        }).catch(error => {
+          console.log(error, 109);
+        });
+      }).catch(error => {
+        console.log(error, 112);
+      });
+      let checkLoserQueryText = `SELECT * FROM "person"
+        WHERE "id" = $1;`;
+      pool.query(checkLoserQueryText, [board['player_two']]
+      ).then(loserResponse => {
+        let updateLoserQueryText = `UPDATE "person"
+          SET "losses_human" = $1
+          WHERE "id" = $2;`;
+        pool.query(updateLoserQueryText, [loserResponse.rows[0].losses_human + 1, loserResponse.rows[0].id]
+        ).then(response => {
+          console.log('Set loser');
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+  else if (val == 'two') {
+    let queryText = `UPDATE "human_game"
+    SET "won" = $2, "turn" = $3
+    WHERE "id" = $1;`;
+    pool.query(queryText, [id, val, computerID]
+    ).then(response => {
+      let checkWinnerQueryText = `SELECT * FROM "person"
+        WHERE "id" = $1;`;
+      pool.query(checkWinnerQueryText, [board['player_' + val]]
+      ).then(winnerResponse => {
+        let updateWinnerQueryText = `UPDATE "person"
+          SET "wins_human" = $1
+          WHERE "id" = $2;`;
+        pool.query(updateWinnerQueryText, [winnerResponse.rows[0].wins_human + 1, winnerResponse.rows[0].id]
+        ).then(response => {
+          console.log('Set winner');
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+      let checkLoserQueryText = `SELECT * FROM "person"
+        WHERE "id" = $1;`;
+      pool.query(checkLoserQueryText, [board['player_one']]
+      ).then(loserResponse => {
+        let updateLoserQueryText = `UPDATE "person"
+          SET "losses_human" = $1
+          WHERE "id" = $2;`;
+        pool.query(updateLoserQueryText, [loserResponse.rows[0].losses_human + 1, loserResponse.rows[0].id]
+        ).then(response => {
+          console.log('Set loser');
+        }).catch(error => {
+          console.log(error);
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+  else if (val == 'draw') {
+    let queryText = `UPDATE "human_game"
+      SET "won" = $2
+      WHERE "id" = $1;`;
+    pool.query(queryText, [id, val]
+    ).then(response => {
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+}
+
 router.get('/human', (req, res) => {
   if (req.isAuthenticated) {
     let queryText = `SELECT * FROM "human_game"
@@ -190,7 +288,7 @@ router.put('/human', (req, res) => {
               pool.query(queryText, [response.rows[0].id]
               ).then(response => {
                 let board = response.rows[0];
-                console.log(checkWonHuman(board));
+                setWonHuman(board.id, checkWonHuman(board), board);
                 res.sendStatus(200);
               }).catch(error => {
                 console.log(error);
@@ -212,14 +310,14 @@ router.put('/human', (req, res) => {
               pool.query(queryText, [response.rows[0].id]
               ).then(response => {
                 let board = response.rows[0];
-                console.log(checkWonHuman(board));
+                setWonHuman(board.id, checkWonHuman(board), board);
                 res.sendStatus(200);
               }).catch(error => {
                 console.log(error);
                 res.sendStatus(500);
               });
             }).catch(error => {
-              console.log(error, 122);
+              console.log(error);
               res.sendStatus(500);
             });
           }
@@ -230,7 +328,7 @@ router.put('/human', (req, res) => {
         res.sendStatus(403);
       }
     }).catch(error => {
-      console.log(error, 130);
+      console.log(error);
       res.sendStatus(500);
     })
   } else {

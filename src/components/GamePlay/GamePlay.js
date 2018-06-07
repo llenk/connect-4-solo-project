@@ -24,6 +24,11 @@ class GamePlay extends Component {
     if (!this.props.user.isLoading && this.props.user.userName === null) {
       this.props.history.push('');
     }
+    if (this.props.user.userInfo) {
+      setTimeout(() => {
+        this.props.dispatch({ type: 'GET_BOARD' });
+      }, 5000);
+    }
   }
 
   logout = () => {
@@ -125,6 +130,5 @@ class GamePlay extends Component {
   }
 }
 
-// this allows us to use <App /> in index.js
 export default connect(mapStateToProps)(GamePlay);
 
