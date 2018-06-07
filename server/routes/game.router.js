@@ -2,6 +2,9 @@ const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
 
+const computerID = process.env.COMPUTER_ID;
+
+// each array is one column, not one row
 const emptyBoard = [
   ['', '', '', '', '', ''],
   ['', '', '', '', '', ''],
@@ -11,6 +14,79 @@ const emptyBoard = [
   ['', '', '', '', '', ''],
   ['', '', '', '', '', ''],
 ];
+
+const checkWonHuman = (board) => {
+  let position = board.position;
+  // check for rows inside each column
+  for (let i = 0; i < position.length; i++) {
+    for (let j = 0; j < position[i].length - 3; j++) {
+      let token = position[i][j];
+      if (position[i][j + 1] == token && position[i][j + 2] == token && position[i][j + 3] == token) {
+        if (token == 'x') {
+          return 'one';
+        }
+        else if (token == 'o') {
+          return 'two';
+        }
+      }
+    }
+  }
+  // check for rows in each row
+  for (let i = 0; i < position.length - 3; i++) {
+    for (let j = 0; j < position[i].length; j++) {
+      let token = position[i][j];
+      if (position[i + 1][j] == token && position[i + 2][j] == token && position[i + 3][j] == token) {
+        if (token == 'x') {
+          return 'one';
+        }
+        else if (token == 'o') {
+          return 'two';
+        }
+      }
+    }
+  }
+  // check for rows in diagonals going down/right
+  for (let i = 0; i < position.length - 3; i++) {
+    for (let j = 0; j < position[i].length - 3; j++) {
+      let token = position[i][j];
+      if (position[i + 1][j + 1] == token && position[i + 2][j + 2] == token && position[i + 3][j + 3] == token) {
+        if (token == 'x') {
+          return 'one';
+        }
+        else if (token == 'o') {
+          return 'two';
+        }
+      }
+    }
+  }
+  // check for rows in diagonals going down/left
+  for (let i = 3; i < position.length; i++) {
+    for (let j = 0; j < position[i].length - 3; j++) {
+      let token = position[i][j];
+      if (position[i - 1][j + 1] == token && position[i - 2][j + 2] == token && position[i - 3][j + 3] == token) {
+        if (token == 'x') {
+          return 'one';
+        }
+        else if (token == 'o') {
+          return 'two';
+        }
+      }
+    }
+  }
+  // check if draw
+  let draw = true;
+  for (let i = 0; i < position.length; i++) {
+    for (let j = 0; j < position[i].length; j++) {
+      if (position[i][j] == '') {
+        draw = false;
+      }
+    }
+  }
+  if (draw) {
+    return 'draw';
+  }
+  return '';
+}
 
 router.get('/human', (req, res) => {
   if (req.isAuthenticated) {
@@ -83,7 +159,7 @@ router.post('/start/human', (req, res) => {
   }
 });
 
-router.put('/', (req, res) => {
+router.put('/human', (req, res) => {
   if (req.isAuthenticated) {
     let checkQueryText = `SELECT * FROM "human_game"
       WHERE "player_one" = $1 OR "player_two" = $1;`;
@@ -91,9 +167,7 @@ router.put('/', (req, res) => {
     ).then(response => {
       if (response.rows[0].turn == req.user.id) {
         let board = response.rows[0].position;
-        console.log(req.body);
         let col = board[req.body.col];
-        console.log(col);
         let last = -1;
         for (let i = 0; i < col.length; i++) {
           if (col[i] == '') {
@@ -101,7 +175,6 @@ router.put('/', (req, res) => {
           }
         }
         last++;
-        console.log(req.body.col, last)
         let token;
         if (last > 0) {
           if (response.rows[0].player_one == req.user.id) {
@@ -110,13 +183,21 @@ router.put('/', (req, res) => {
             SET "position"[$2][$3] = $4, "turn" = "human_game"."player_two"
             WHERE "player_one" = $1;`;
             let queryArray = [req.user.id, req.body.col + 1, last, token];
-            console.log(queryArray);
             pool.query(queryText, queryArray
-            ).then(response => {
-              console.log(response);
-              res.sendStatus(200);
+            ).then(responsePrime => {
+              let queryText = `SELECT * FROM "human_game"
+                WHERE "id" = $1`;
+              pool.query(queryText, [response.rows[0].id]
+              ).then(response => {
+                let board = response.rows[0];
+                console.log(checkWonHuman(board));
+                res.sendStatus(200);
+              }).catch(error => {
+                console.log(error);
+                res.sendStatus(500);
+              });
             }).catch(error => {
-              console.log(error, 111);
+              console.log(error);
               res.sendStatus(500);
             });
           } else {
@@ -125,8 +206,19 @@ router.put('/', (req, res) => {
             SET "position"[$2][$3] = $4, "turn" = "human_game"."player_one"
             WHERE "player_two" = $1;`;
             pool.query(queryText, [req.user.id, req.body.col + 1, last, token]
-            ).then(response => res.sendStatus(200)
-            ).catch(error => {
+            ).then(responsePrime => {
+              let queryText = `SELECT * FROM "human_game"
+                WHERE "id" = $1`;
+              pool.query(queryText, [response.rows[0].id]
+              ).then(response => {
+                let board = response.rows[0];
+                console.log(checkWonHuman(board));
+                res.sendStatus(200);
+              }).catch(error => {
+                console.log(error);
+                res.sendStatus(500);
+              });
+            }).catch(error => {
               console.log(error, 122);
               res.sendStatus(500);
             });
@@ -147,3 +239,6 @@ router.put('/', (req, res) => {
 });
 
 module.exports = router;
+
+// testing data:
+// {{"","","","","",o},{"","","",x,x,x},{"","","",o,o,o},{"","","","",x,x},{"","","","",o,x},{"","","",o,x,o},{"","","","",o,x}}

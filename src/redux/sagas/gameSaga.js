@@ -10,7 +10,11 @@ function* humanGameStart(action) {
     try {
         yield call(axios.post, '/api/game/start/human', config);
     } catch (error) {
-        console.log(error);
+        let errorArray = error.message.split(' ');
+        let status = parseInt(errorArray[errorArray.length - 1], 10);
+        if (status === 409) {
+            yield put({type: 'SET_LOAD_ERROR', payload: 'You already have a game in progress. Try navigating to /game'})
+        }
     }
 }
 
@@ -25,10 +29,15 @@ function* getHumanBoard(action) {
 
 function* placeToken(action) {
     try {
-        yield call(axios.put, 'api/game', action.payload, config);
+        yield call(axios.put, 'api/game/human', action.payload, config);
         yield put({type: 'GET_BOARD'});
+        yield put({type: 'SET_GAME_ERROR', payload: ''});
     } catch (error) {
-        console.log(error);
+        let errorArray = error.message.split(' ');
+        let status = parseInt(errorArray[errorArray.length - 1], 10);
+        if (status === 409) {
+            yield put({type: 'SET_GAME_ERROR', payload: `You can't put a token in a full column!`});
+        }
     }
 }
 

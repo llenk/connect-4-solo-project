@@ -8,15 +8,24 @@ const gameState = (state = {}, action) => {
     }
 }
 
-const errorMessage = (state = '', action) => {
+const errorMessageLoad = (state = '', action) => {
     switch (action.type) {
-        case 'SET_ERROR':
+        case 'SET_LOAD_ERROR':
             return action.payload;
         default: return state;
     } 
 }
 
+const errorMessageGame = (state = '', action) => {
+    switch (action.type) {
+        case 'SET_GAME_ERROR':
+            return action.payload;
+        default: return state;
+    }
+}
+
 export default combineReducers({
     gameState,
-    errorMessage,
+    errorMessageLoad,
+    errorMessageGame,
 });

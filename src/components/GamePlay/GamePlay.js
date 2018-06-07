@@ -16,6 +16,8 @@ class GamePlay extends Component {
   componentDidMount() {
     this.props.dispatch({ type: USER_ACTIONS.FETCH_USER });
     this.props.dispatch({ type: 'GET_BOARD' });
+    this.props.dispatch({type: 'SET_LOAD_ERROR', payload: ''});
+    this.props.dispatch({type: 'SET_GAME_ERROR', payload: ''});
   }
 
   componentDidUpdate() {
@@ -105,6 +107,9 @@ class GamePlay extends Component {
                 <h2>
                   {this.checkTurn(this.props.game.gameState.turn)}
                 </h2>
+                <h3>
+                  {this.props.game.errorMessageGame}
+                </h3>
               </div>
             </Grid>
           </Grid>

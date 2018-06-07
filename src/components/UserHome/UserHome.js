@@ -9,22 +9,25 @@ import './UserHome.css';
 
 const mapStateToProps = state => ({
   user: state.user,
+  game: state.game,
 });
 
 class UserHome extends Component {
-  constructor() {
-    super();
-    this.state = {
-      message: '',
-    };
-  }
+
   componentDidMount() {
     this.props.dispatch({ type: USER_ACTIONS.FETCH_USER });
+    this.props.dispatch({type: 'SET_ERROR', payload: ''});
   }
 
   componentDidUpdate() {
     if (!this.props.user.isLoading && this.props.user.userName === null) {
       this.props.history.push('');
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.game.gameState.board) {
+      this.props.history.push('/game');
     }
   }
 
@@ -35,7 +38,6 @@ class UserHome extends Component {
 
   humanGame = () => {
     this.props.dispatch({type: 'HUMAN_GAME_START', payload: this.props.user.userInfo.id});
-    this.props.history.push('/game');
   }
 
   render() {
@@ -96,7 +98,7 @@ class UserHome extends Component {
                   Ready to Play?
                 </h1>
                 <h3>
-                  {this.state.message}
+                  {this.props.game.errorMessageLoad}
                 </h3>
                 <Button variant="contained" className="butt" onClick={this.humanGame}>
                   Play against human
