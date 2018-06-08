@@ -215,9 +215,9 @@ router.post('/start/human', (req, res) => {
         ).then(responseTwo => {
           if (responseTwo.rows.length == 0) {
             addQueryText = `INSERT INTO "human_game"
-              (position, player_one)
-              VALUES ($1, $2);`;
-            pool.query(addQueryText, [emptyBoard, req.user.id]
+              (position, player_one, turn)
+              VALUES ($1, $2, $3);`;
+            pool.query(addQueryText, [emptyBoard, req.user.id, req.user.id]
             ).then(response => {
               res.sendStatus(200);
             }).catch(error => {

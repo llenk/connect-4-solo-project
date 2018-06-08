@@ -61,8 +61,14 @@ class GamePlay extends Component {
   }
 
   checkTurnAndWon = (turn, board) => {
-    console.log(board);
-    if (turn === this.props.user.userInfo.id) {
+    if (board.player_two === null) {
+      return (
+        <div>
+        <h2>Waiting for player two...</h2>
+        </div>
+      )
+    }
+    else if (turn === this.props.user.userInfo.id) {
       return <h2>It's your turn!!</h2>;
     } 
     else if (board['player_' + board.won] === this.props.user.userInfo.id) {
@@ -92,13 +98,6 @@ class GamePlay extends Component {
         <Button variant="raised">
           Play again
         </Button>
-        </div>
-      )
-    }
-    else if (board.player_two === null) {
-      return (
-        <div>
-        <h2>Waiting for player two...</h2>
         </div>
       )
     }
