@@ -26,7 +26,7 @@ class UserHome extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.game.gameState.board) {
+    if (nextProps.game.gameState.position) {
       this.props.history.push('/game');
     }
   }

@@ -9,6 +9,7 @@ const config = {
 function* humanGameStart(action) {
     try {
         yield call(axios.post, '/api/game/start/human', config);
+        yield put({type: 'GET_BOARD'});
     } catch (error) {
         let errorArray = error.message.split(' ');
         let status = parseInt(errorArray[errorArray.length - 1], 10);
