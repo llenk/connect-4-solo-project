@@ -201,6 +201,56 @@ router.get('/human', (req, res) => {
   }
 });
 
+router.delete('/human', (req, res) => {
+  if (req.isAuthenticated()) {
+    let checkQueryText = `SELECT * FROM "human_game"
+      WHERE "player_one" = $1 OR "player_two" = $1;`;
+    pool.query(checkQueryText, [req.user.id]
+    ).then(checkResponse => {
+      let player, otherPlayer;
+      if (checkResponse.rows[0].player_one == req.user.id) {
+        player = 'one';
+        otherPlayer = 'two';
+      } else {
+        player = 'two';
+        otherPlayer = 'one';
+      }
+      // if the other player is the computer, the game can be deleted
+      if (checkResponse.rows[0]['player_' + otherPlayer] == computerID) {
+        let deleteQueryText = `DELETE FROM "human_game" WHERE "id"=$1;`;
+        pool.query(deleteQueryText, [checkResponse.rows[0].id]
+        ).then(response => {
+          res.sendStatus(200);
+        }).catch(error => {
+          console.log(error);
+          res.sendStatus(500);
+        });
+      }
+      // otherwise, the other player may still want to look at the game
+      // so it cannot be deleted
+      // but the player id should be changed to computer
+      else {
+        let updateQueryText = `UPDATE "human_game" 
+          SET "player_${player}"=$2 
+          WHERE "id"=$1;`;
+        pool.query(updateQueryText, [checkResponse.rows[0].id, computerID]
+        ).then(response => {
+          res.sendStatus(200);
+        }).catch(error => {
+          console.log(error);
+          res.sendStatus(500);
+        });
+      }
+    }).catch(error => {
+      console.log(error);
+      res.sendStatus(500);
+    })
+  }
+  else {
+    res.sendStatus(404);
+  }
+});
+
 router.post('/start/human', (req, res) => {
   if (req.isAuthenticated()) {
     let checkQueryText = `SELECT * FROM "human_game"

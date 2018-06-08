@@ -27,7 +27,7 @@ class GamePlay extends Component {
     if (this.props.user.userInfo) {
       setTimeout(() => {
         this.props.dispatch({ type: 'GET_BOARD' });
-      }, 5000);
+      }, 2000);
     }
   }
 
@@ -75,7 +75,7 @@ class GamePlay extends Component {
       return (
         <div>
         <h2>YOU WON</h2>
-        <Button variant="raised">
+        <Button variant="raised" onClick={this.handlePlayAgain}>
           Play again
         </Button>
         </div>
@@ -85,7 +85,7 @@ class GamePlay extends Component {
       return (
         <div>
         <h2>YOU LOST</h2>
-        <Button variant="raised">
+        <Button variant="raised" onClick={this.handlePlayAgain}>
           Play again
         </Button>
         </div>
@@ -95,7 +95,7 @@ class GamePlay extends Component {
       return (
         <div>
         <h2>YOU LOST</h2>
-        <Button variant="raised">
+        <Button variant="raised" onClick={this.handlePlayAgain}>
           Play again
         </Button>
         </div>
@@ -105,6 +105,11 @@ class GamePlay extends Component {
       return <h2>Not your turn.</h2>;
     }
   }
+
+  handlePlayAgain = () => {
+    this.props.dispatch({type: 'DELETE_GAME'});
+    this.props.history.push('/home');
+  } 
 
   placeToken = (col) => (event) => {
     const action = {type: 'PLACE_TOKEN', payload: {col: col}};

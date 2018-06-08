@@ -42,10 +42,19 @@ function* placeToken(action) {
     }
 }
 
+function* removePlayerFromGame(action) {
+    try{
+        yield call(axios.delete, '/api/game/human', config);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 function* gameSaga() {
     yield takeEvery('HUMAN_GAME_START', humanGameStart);
     yield takeEvery('GET_BOARD', getHumanBoard);
     yield takeEvery('PLACE_TOKEN', placeToken);
+    yield takeEvery('DELETE_GAME', removePlayerFromGame);
 }
 
 export default gameSaga;
