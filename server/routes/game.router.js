@@ -191,11 +191,7 @@ router.get('/human', (req, res) => {
     let queryText = `SELECT * FROM "human_game"
             WHERE "player_one" = $1 OR "player_two" = $1;`;
     pool.query(queryText, [req.user.id]
-    ).then(response => res.send({
-      board: response.rows[0].position,
-      turn: response.rows[0].turn,
-      id: response.rows[0].id,
-    })
+    ).then(response => res.send(response.rows[0])
     ).catch(error => {
       console.log(error);
       res.sendStatus(500);

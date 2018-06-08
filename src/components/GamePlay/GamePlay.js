@@ -60,11 +60,50 @@ class GamePlay extends Component {
     }
   }
 
-  checkTurn = (turn) => {
+  checkTurnAndWon = (turn, board) => {
+    console.log(board);
     if (turn === this.props.user.userInfo.id) {
-      return "It's your turn!!";
-    } else {
-      return "Not your turn.";
+      return <h2>It's your turn!!</h2>;
+    } 
+    else if (board['player_' + board.won] === this.props.user.userInfo.id) {
+      return (
+        <div>
+        <h2>YOU WON</h2>
+        <Button variant="raised">
+          Play again
+        </Button>
+        </div>
+      )
+    }
+    else if (board['player_one'] === this.props.user.userInfo.id && board.won === 'two') {
+      return (
+        <div>
+        <h2>YOU LOST</h2>
+        <Button variant="raised">
+          Play again
+        </Button>
+        </div>
+      )
+    }
+    else if (board['player_two'] === this.props.user.userInfo.id && board.won === 'one') {
+      return (
+        <div>
+        <h2>YOU LOST</h2>
+        <Button variant="raised">
+          Play again
+        </Button>
+        </div>
+      )
+    }
+    else if (board.player_two === null) {
+      return (
+        <div>
+        <h2>Waiting for player two...</h2>
+        </div>
+      )
+    }
+    else {
+      return <h2>Not your turn.</h2>;
     }
   }
 
@@ -74,8 +113,9 @@ class GamePlay extends Component {
   }
 
   render() {
+    console.log(this.props.game.gameState);
     let content = null;
-    if (this.props.user.userInfo && this.props.game.gameState.board) {
+    if (this.props.user.userInfo && this.props.game.gameState.position) {
       content = (
         <div>
           <Grid container>
@@ -92,7 +132,7 @@ class GamePlay extends Component {
           <Grid container>
             <Grid item xs={12} md={7}>
               <div className="board">
-                {this.props.game.gameState.board.map((row, i) => {
+                {this.props.game.gameState.position.map((row, i) => {
                   return (
                     <div key={i} onClick={this.placeToken(i)}>
                       {row.map((cell, j) => {
@@ -109,9 +149,7 @@ class GamePlay extends Component {
             </Grid>
             <Grid item xs={12} md={2}>
               <div className="turn">
-                <h2>
-                  {this.checkTurn(this.props.game.gameState.turn)}
-                </h2>
+                {this.checkTurnAndWon(this.props.game.gameState.turn, this.props.game.gameState)}
                 <h3>
                   {this.props.game.errorMessageGame}
                 </h3>
