@@ -49,7 +49,6 @@ class UserHome extends Component {
 
   render() {
     let content = null;
-    console.log(this.props.user);
     if (this.props.user.userInfo) {
       content = (
         <div>
@@ -129,6 +128,5 @@ class UserHome extends Component {
   }
 }
 
-// this allows us to use <App /> in index.js
 export default connect(mapStateToProps)(UserHome);
 

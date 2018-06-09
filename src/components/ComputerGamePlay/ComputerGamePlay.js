@@ -64,17 +64,10 @@ class GamePlay extends Component {
   }
 
   checkTurnAndWon = (turn, board) => {
-    if (board.player_two === null) {
-      return (
-        <div>
-        <h2>Waiting for player two...</h2>
-        </div>
-      )
-    }
-    else if (turn === this.props.user.userInfo.id) {
+    if (turn === true) {
       return <h2>It's your turn!!</h2>;
     } 
-    else if (board['player_' + board.won] === this.props.user.userInfo.id) {
+    else if (board.won === true) {
       return (
         <div>
         <h2>YOU WON</h2>
@@ -84,7 +77,8 @@ class GamePlay extends Component {
         </div>
       )
     }
-    else if (board['player_one'] === this.props.user.userInfo.id && board.won === 'two') {
+    // 
+    else if (board.won) {
       return (
         <div>
         <h2>YOU LOST</h2>
@@ -94,7 +88,7 @@ class GamePlay extends Component {
         </div>
       )
     }
-    else if (board['player_two'] === this.props.user.userInfo.id && board.won === 'one') {
+    else if (board.lost) {
       return (
         <div>
         <h2>YOU LOST</h2>
@@ -114,7 +108,7 @@ class GamePlay extends Component {
   } 
 
   placeToken = (col) => (event) => {
-    const action = {type: 'PLACE_TOKEN', payload: {col: col}};
+    const action = {type: 'PLACE_TOKEN_CG', payload: {col: col}};
     this.props.dispatch(action);
   }
 
