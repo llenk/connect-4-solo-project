@@ -410,6 +410,21 @@ router.post('/computer', (req, res) => {
   }
 });
 
+router.get('/computer', (req, res) => {
+  if (req.isAuthenticated) {
+    let queryText = `SELECT * FROM "computer_game"
+      WHERE "player_one" = $1;`;
+    pool.query(queryText, [req.user.id]
+    ).then(response => res.send(response.rows[0])
+    ).catch(error => {
+      console.log(error);
+      res.sendStatus(500);
+    });
+  } else {
+    res.sendStatus(403);
+  }
+});
+
 module.exports = router;
 
 // testing data:
