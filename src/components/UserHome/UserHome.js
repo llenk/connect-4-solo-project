@@ -26,8 +26,8 @@ class UserHome extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.game.gameState.position) {
-      this.props.history.push('/game');
+    if (nextProps.game.humanGameState.position) {
+      this.props.history.push('/human-game');
     }
   }
 

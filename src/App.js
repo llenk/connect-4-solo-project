@@ -8,7 +8,7 @@ import {
 import LoginPage from './components/LoginPage/LoginPage';
 import RegisterPage from './components/RegisterPage/RegisterPage';
 import UserHome from './components/UserHome/UserHome';
-import GamePlay from './components/GamePlay/GamePlay';
+import HumanGamePlay from './components/GamePlay/GamePlay';
 import ResultPage from './components/ResultPage/ResultPage';
 
 import './styles/main.css';
@@ -31,8 +31,8 @@ const App = () => (
           component={UserHome}
         />
         <Route
-          path="/game"
-          component={GamePlay}
+          path="/human-game"
+          component={HumanGamePlay}
         />
         <Route 
           page="/result"

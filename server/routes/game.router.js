@@ -189,7 +189,7 @@ const setWonHuman = (id, val, board) => {
 router.get('/human', (req, res) => {
   if (req.isAuthenticated) {
     let queryText = `SELECT * FROM "human_game"
-            WHERE "player_one" = $1 OR "player_two" = $1;`;
+      WHERE "player_one" = $1 OR "player_two" = $1;`;
     pool.query(queryText, [req.user.id]
     ).then(response => res.send(response.rows[0])
     ).catch(error => {

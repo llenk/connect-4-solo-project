@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-const gameState = (state = {}, action) => {
+const humanGameState = (state = {}, action) => {
     switch (action.type) {
         case 'SET_BOARD':
             return action.payload.data;
@@ -25,7 +25,7 @@ const errorMessageGame = (state = '', action) => {
 }
 
 export default combineReducers({
-    gameState,
+    humanGameState,
     errorMessageLoad,
     errorMessageGame,
 });

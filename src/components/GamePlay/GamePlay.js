@@ -24,7 +24,7 @@ class GamePlay extends Component {
     if (!this.props.user.isLoading && this.props.user.userName === null) {
       this.props.history.push('');
     }
-    if (!this.props.user.isLoading && !this.props.game.gameState.position) {
+    if (!this.props.user.isLoading && !this.props.game.humanGameState.position) {
       this.props.history.push('/home');
     }
     if (this.props.user.userInfo) {
@@ -119,9 +119,8 @@ class GamePlay extends Component {
   }
 
   render() {
-    console.log(this.props.game.gameState);
     let content = null;
-    if (this.props.user.userInfo && this.props.game.gameState.position) {
+    if (this.props.user.userInfo && this.props.game.humanGameState.position) {
       content = (
         <div>
           <Grid container>
@@ -138,7 +137,7 @@ class GamePlay extends Component {
           <Grid container>
             <Grid item xs={12} md={7}>
               <div className="board">
-                {this.props.game.gameState.position.map((row, i) => {
+                {this.props.game.humanGameState.position.map((row, i) => {
                   return (
                     <div key={i} onClick={this.placeToken(i)}>
                       {row.map((cell, j) => {
@@ -155,7 +154,7 @@ class GamePlay extends Component {
             </Grid>
             <Grid item xs={12} md={2}>
               <div className="turn">
-                {this.checkTurnAndWon(this.props.game.gameState.turn, this.props.game.gameState)}
+                {this.checkTurnAndWon(this.props.game.humanGameState.turn, this.props.game.humanGameState)}
                 <h3>
                   {this.props.game.errorMessageGame}
                 </h3>
