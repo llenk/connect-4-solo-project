@@ -63,9 +63,9 @@ class UserHome extends Component {
                 <h1>
                   Welcome to Connect 4, {this.props.user.userInfo.username}!
                 </h1>
-                <h3>
+                <h2>
                   Your stats are:
-                </h3>
+                </h2>
                 <p>
                   Wins against an easy computer: {this.props.user.userInfo.wins_easy_computer}
                 </p>
@@ -78,9 +78,9 @@ class UserHome extends Component {
                 <p>
                   Losses against a human: {this.props.user.userInfo.losses_human}
                 </p>
-                <h3>
+                <h2>
                   The rules are:
-                </h3>
+                </h2>
                 <p>
                   The object of Connect 4 is to get four pieces in a row. This can be horizontally, vertically, or diagonally.
                 </p>

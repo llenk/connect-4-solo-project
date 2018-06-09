@@ -21,3 +21,6 @@
 .butt {
     margin: 10px !important;
 }
+.welcomeDiv p {
+    font-size: 125%;
+}
