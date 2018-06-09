@@ -50,11 +50,20 @@ function* removePlayerFromGame(action) {
     }
 }
 
+function* computerGameStart(action) {
+    try {
+        yield call(axios.post, '/api/game/computer', config);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 function* gameSaga() {
     yield takeEvery('HUMAN_GAME_START', humanGameStart);
     yield takeEvery('GET_BOARD', getHumanBoard);
     yield takeEvery('PLACE_TOKEN', placeToken);
     yield takeEvery('DELETE_GAME', removePlayerFromGame);
+    yield takeEvery('COMPUTER_GAME_START', computerGameStart);
 }
 
 export default gameSaga;

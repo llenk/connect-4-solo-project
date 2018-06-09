@@ -265,9 +265,9 @@ router.post('/start/human', (req, res) => {
         ).then(responseTwo => {
           if (responseTwo.rows.length == 0) {
             addQueryText = `INSERT INTO "human_game"
-              (position, player_one, turn)
-              VALUES ($1, $2, $3);`;
-            pool.query(addQueryText, [emptyBoard, req.user.id, req.user.id]
+              (position, player_one)
+              VALUES ($1, $2);`;
+            pool.query(addQueryText, [emptyBoard, req.user.id]
             ).then(response => {
               res.sendStatus(200);
             }).catch(error => {
@@ -276,9 +276,9 @@ router.post('/start/human', (req, res) => {
             });
           } else {
             addQueryText = `UPDATE "human_game" 
-              SET "player_two"=$2 
+              SET "player_two"=$2, "turn" = $3 
               WHERE "id"=$1;`;
-            pool.query(addQueryText, [responseTwo.rows[0].id, req.user.id]
+            pool.query(addQueryText, [responseTwo.rows[0].id, req.user.id, responseTwo.rows[0].player_one]
             ).then(response => {
               res.sendStatus(200);
             }).catch(error => {
@@ -379,6 +379,34 @@ router.put('/human', (req, res) => {
     })
   } else {
     res.sendStatus(403);
+  }
+});
+
+router.post('/computer', (req, res) => {
+  if (req.isAuthenticated) {
+    let checkQueryText = `SELECT * FROM "computer_game"
+      WHERE "player_one" = $1;`;
+    pool.query(checkQueryText, [req.user.id]
+    ).then(response => {
+      if (response.rowCount == 0) {
+        let addQueryText = `INSERT INTO "computer_game" 
+          ("position", "player_one")
+          VALUES ($1, $2);`;
+        pool.query(addQueryText, [emptyBoard, req.user.id]
+        ).then(response => {
+          res.sendStatus(200);
+        }).catch(error => {
+          res.sendStatus(500);
+        })
+      } else {
+        res.sendStatus(409);
+      }
+    }).catch(error => {
+      console.log(error);
+      res.sendStatus(500);
+    });
+  } else {
+    res.sendStatus(404);
   }
 });
 

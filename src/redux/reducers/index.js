@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import user from './userReducer';
 import login from './loginReducer';
-import game from './humanGameReducer';
+import game from './gameReducer';
 
 const store = combineReducers({
   user,

@@ -40,6 +40,10 @@ class UserHome extends Component {
     this.props.dispatch({type: 'HUMAN_GAME_START', payload: this.props.user.userInfo.id});
   }
 
+  computerGame = () => {
+    this.props.dispatch({type: 'COMPUTER_GAME_START', payload: this.props.user.userInfo.id});
+  }
+
   render() {
     let content = null;
     console.log(this.props.user);
@@ -104,7 +108,7 @@ class UserHome extends Component {
                   Play against human
                 </Button>
                 <br />
-                <Button variant="contained" className="butt">
+                <Button variant="contained" className="butt" onClick={this.computerGame}>
                   Play against easy computer
                 </Button>
               </div>
