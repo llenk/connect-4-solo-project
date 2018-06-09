@@ -29,6 +29,9 @@ class UserHome extends Component {
     if (nextProps.game.humanGameState.position) {
       this.props.history.push('/human-game');
     }
+    if (nextProps.game.computerGameState.position) {
+      this.props.history.push('/computer-game');
+    }
   }
 
   logout = () => {

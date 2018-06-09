@@ -9,6 +9,7 @@ import LoginPage from './components/LoginPage/LoginPage';
 import RegisterPage from './components/RegisterPage/RegisterPage';
 import UserHome from './components/UserHome/UserHome';
 import HumanGamePlay from './components/GamePlay/GamePlay';
+import ComputerGamePlay from './components/ComputerGamePlay/ComputerGamePlay';
 import ResultPage from './components/ResultPage/ResultPage';
 
 import './styles/main.css';
@@ -33,6 +34,10 @@ const App = () => (
         <Route
           path="/human-game"
           component={HumanGamePlay}
+        />
+        <Route
+          path="/computer-game"
+          component={ComputerGamePlay}
         />
         <Route 
           page="/result"

@@ -22,7 +22,16 @@ function* humanGameStart(action) {
 function* getHumanBoard(action) {
     try {
         let game = yield call(axios.get, 'api/game/human', config);
-        yield put({type: 'SET_BOARD', payload: game});
+        yield put({type: 'SET_HUMAN_BOARD', payload: game});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function* getComputerBoard(action) {
+    try {
+        let game = yield call(axios.get, 'api/game/computer', config);
+        yield put({type: 'SET_COMPUTER_BOARD', payload: game});
     } catch (error) {
         console.log(error);
     }
@@ -64,6 +73,7 @@ function* gameSaga() {
     yield takeEvery('PLACE_TOKEN', placeToken);
     yield takeEvery('DELETE_GAME', removePlayerFromGame);
     yield takeEvery('COMPUTER_GAME_START', computerGameStart);
+    yield takeEvery('GET_COMPUTER_BOARD', getComputerBoard);
 }
 
 export default gameSaga;
