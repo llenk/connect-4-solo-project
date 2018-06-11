@@ -186,6 +186,16 @@ const setWonHuman = (id, val, board) => {
   }
 }
 
+const availableColumns = (board) => {
+  let cols = [];
+  for (let i = 0; i < board.length; i++) {
+    if (board[i][0] === '') {
+      cols.push(i);
+    }
+  }
+  return cols;
+}
+
 router.get('/human', (req, res) => {
   if (req.isAuthenticated) {
     let queryText = `SELECT * FROM "human_game"
@@ -406,7 +416,7 @@ router.post('/computer', (req, res) => {
       res.sendStatus(500);
     });
   } else {
-    res.sendStatus(404);
+    res.sendStatus(403);
   }
 });
 
@@ -417,6 +427,81 @@ router.get('/computer', (req, res) => {
     pool.query(queryText, [req.user.id]
     ).then(response => res.send(response.rows[0])
     ).catch(error => {
+      console.log(error);
+      res.sendStatus(500);
+    });
+  } else {
+    res.sendStatus(403);
+  }
+});
+
+router.put('/computer', (req, res) => {
+  if (req.isAuthenticated) {
+    let checkQueryText = `SELECT * FROM "computer_game"
+      WHERE "player_one" = $1;`;
+    pool.query(checkQueryText, [req.user.id]
+    ).then(checkResponse => {
+      if (checkResponse.rows[0].turn) {
+        let board = checkResponse.rows[0].position;
+        let col = board[req.body.col];
+        let last = -1;
+        for (let i = 0; i < col.length; i++) {
+          if (col[i] == '') {
+            last = i;
+          }
+        }
+        last++;
+        // last will be the one-based index of the bottom empty spot
+        // unless the row is full, in which case it will be zero
+        if (last > 0) {
+          // place token
+          let addQueryText = `UPDATE "computer_game"
+            SET "position"[$2][$3] = $4, "turn" = $5
+            WHERE "player_one" = $1;`;
+          pool.query(addQueryText, [req.user.id, req.body.col + 1, last, 'x', false]
+          ).then(response => {
+            pool.query(checkQueryText, [req.user.id]
+            ).then(boardResponse => {
+              boardResponse = boardResponse.rows[0];
+              let cols = availableColumns(boardResponse.position);
+              // col is the number of the column in the cols array, not the column itself
+              // cols[col] is the number of the column
+              let col = Math.floor(Math.random() * cols.length);
+              last = -1;
+              console.log(cols, col, cols[col]);
+              let column = boardResponse.position[cols[col]];
+              console.log(column);
+              for (let i = 0; i < boardResponse.position[cols[col]].length; i++) {
+                if (boardResponse.position[cols[col]][i] == '') {
+                  last = i;
+                }
+              }
+              last++;
+              pool.query(addQueryText, [req.user.id, cols[col] + 1, last, 'o', true]
+              ).then(response => {
+                res.send(200);
+              }).catch(error => {
+                console.log(error);
+                res.sendStatus(500);
+              });
+            }).catch(error => {
+              console.log(error);
+              res.sendStatus(500);
+            });
+          }).catch(error => {
+            console.log(error);
+            res.sendStatus(500);
+          });
+        }
+        else {
+          // send error if column is full
+          res.sendStatus(409);
+        }
+      } else {
+        console.log('hi')
+        res.sendStatus(403);
+      }
+    }).catch(error => {
       console.log(error);
       res.sendStatus(500);
     });
