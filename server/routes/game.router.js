@@ -89,6 +89,9 @@ const checkWonHuman = (board) => {
 }
 
 const setWonHuman = (id, val, board) => {
+  // id is the id of the game
+  // val is the value returned by checkWonHuman
+  // board is the row from SQL, not just the position
   if (val == 'one') {
     let queryText = `UPDATE "human_game"
     SET "won" = $2, "turn" = $3
@@ -194,6 +197,68 @@ const availableColumns = (board) => {
     }
   }
   return cols;
+}
+
+setWonComputer = (id, val, board) => {
+  // id is the id of the game
+  // val is the value returned by checkWonHuman
+  // board is the row from SQL, not just the position
+  if (val === 'one') {
+    let gameQueryText = `UPDATE "computer_game"
+      SET "won" = $2, "turn" = $3
+      WHERE "id" = $1;`;
+    let personQueryText = `UPDATE "person"
+      SET "wins_easy_computer" = "wins_easy_computer" + 1
+      WHERE "id" = $1;`;
+    pool.query(gameQueryText, [id, 'won', false]
+    ).then(response => {
+      pool.query(personQueryText, [board.player_one]
+      ).then(response => {
+        console.log('set true');
+        return true;
+      }).catch(error => {
+        console.log(error);
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+  else if (val === 'two') {
+    let gameQueryText = `UPDATE "computer_game"
+      SET "won" = $2, "turn" = $3
+      WHERE "id" = $1;`;
+    let personQueryText = `UPDATE "person"
+      SET "losses_easy_computer" = "losses_easy_computer" + 1
+      WHERE "id" = $1;`;
+    pool.query(gameQueryText, [id, 'lost', false]
+    ).then(response => {
+      pool.query(personQueryText, [board.player_one]
+      ).then(response => {
+        console.log('set true');
+        return true;
+      }).catch(error => {
+        console.log(error);
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+  else if (val === 'draw') {
+    let gameQueryText = `UPDATE "computer_game"
+      SET "won" = $2, "turn" = $3
+      WHERE "id" = $1;`;
+    pool.query(gameQueryText, [id, 'draw', false]
+    ).then(response => {
+      console.log('set true');
+      return true;
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+  else {
+    console.log('set false');
+    return false;
+  }
 }
 
 router.get('/human', (req, res) => {
@@ -463,27 +528,32 @@ router.put('/computer', (req, res) => {
             pool.query(checkQueryText, [req.user.id]
             ).then(boardResponse => {
               boardResponse = boardResponse.rows[0];
-              let cols = availableColumns(boardResponse.position);
-              // col is the number of the column in the cols array, not the column itself
-              // cols[col] is the number of the column
-              let col = Math.floor(Math.random() * cols.length);
-              last = -1;
-              console.log(cols, col, cols[col]);
-              let column = boardResponse.position[cols[col]];
-              console.log(column);
-              for (let i = 0; i < boardResponse.position[cols[col]].length; i++) {
-                if (boardResponse.position[cols[col]][i] == '') {
-                  last = i;
+              if (setWonComputer(boardResponse.id, checkWonHuman(boardResponse), boardResponse)) {
+                let cols = availableColumns(boardResponse.position);
+                // col is the number of the column in the cols array, not the column itself
+                // cols[col] is the number of the column
+                let col = Math.floor(Math.random() * cols.length);
+                last = -1;
+                let column = boardResponse.position[cols[col]];
+                console.log('WHAT');
+                for (let i = 0; i < boardResponse.position[cols[col]].length; i++) {
+                  if (boardResponse.position[cols[col]][i] == '') {
+                    last = i;
+                  }
                 }
+                last++;
+                pool.query(addQueryText, [req.user.id, cols[col] + 1, last, 'o', true]
+                ).then(response => {
+                  console.log('hi');
+                  res.sendStatus(200);
+                }).catch(error => {
+                  console.log(error);
+                  res.sendStatus(500);
+                });
               }
-              last++;
-              pool.query(addQueryText, [req.user.id, cols[col] + 1, last, 'o', true]
-              ).then(response => {
-                res.send(200);
-              }).catch(error => {
-                console.log(error);
-                res.sendStatus(500);
-              });
+              else {
+                res.sendStatus(200);
+              }
             }).catch(error => {
               console.log(error);
               res.sendStatus(500);

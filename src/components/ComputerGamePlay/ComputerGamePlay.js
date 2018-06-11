@@ -67,7 +67,7 @@ class GamePlay extends Component {
     if (turn === true) {
       return <h2>It's your turn!!</h2>;
     } 
-    else if (board.won === true) {
+    else if (board.won === 'won') {
       return (
         <div>
         <h2>YOU WON</h2>
@@ -78,7 +78,7 @@ class GamePlay extends Component {
       )
     }
     // 
-    else if (board.won) {
+    else if (board.won === 'lost') {
       return (
         <div>
         <h2>YOU LOST</h2>
@@ -88,10 +88,10 @@ class GamePlay extends Component {
         </div>
       )
     }
-    else if (board.lost) {
+    else if (board.won === 'draw') {
       return (
         <div>
-        <h2>YOU LOST</h2>
+        <h2>YOU DREW</h2>
         <Button variant="raised" onClick={this.handlePlayAgain}>
           Play again
         </Button>
