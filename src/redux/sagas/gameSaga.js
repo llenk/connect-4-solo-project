@@ -14,7 +14,7 @@ function* humanGameStart(action) {
         let errorArray = error.message.split(' ');
         let status = parseInt(errorArray[errorArray.length - 1], 10);
         if (status === 409) {
-            yield put({type: 'SET_LOAD_ERROR', payload: 'You already have a game in progress. Try navigating to /game'})
+            yield put({type: 'SET_LOAD_ERROR', payload: 'You already have a game in progress. Try navigating to /human-game'})
         }
     }
 }
@@ -88,7 +88,7 @@ function* computerGameStart(action) {
         let errorArray = error.message.split(' ');
         let status = parseInt(errorArray[errorArray.length - 1], 10);
         if (status === 409) {
-            yield put({type: 'SET_LOAD_ERROR', payload: 'You already have a game in progress. Try navigating to /game'})
+            yield put({type: 'SET_LOAD_ERROR', payload: 'You already have a game in progress. Try navigating to /computer-game'})
         }
     }
 }
