@@ -577,12 +577,46 @@ router.put('/computer', async function (req, res) {
         console.log('placing computer token:', chosenColumn, last);
         board[chosenColumn][last] = 'o';
         await pool.query(updateQueryText, [req.user.id, board, true]);
-        let result = checkWonHuman({position: board});
+        let result = checkWonHuman({ position: board });
         if (result == 'two') {
           // computer won, game is over
-          
+          let gameQueryText = `UPDATE "computer_game"
+              SET "won" = $2, "turn" = $3
+              WHERE "id" = $1;`;
+          let personQueryText = `UPDATE "person"
+              SET "losses_easy_computer" = "losses_easy_computer" + 1
+              WHERE "id" = $1;`;
+          pool.query(gameQueryText, [info.id, 'lost', false]
+          ).then(function (response) {
+            pool.query(personQueryText, [info.player_one]
+            ).then(response => {
+              res.sendStatus(200);
+            }).catch(error => {
+              console.log(error);
+              res.sendStatus(500);
+            });
+          }).catch(error => {
+            console.log(error);
+            res.sendStatus(500);
+          });
         }
-        res.sendStatus(200);
+        else if (result == 'draw') {
+          // drew, game over
+          let gameQueryText = `UPDATE "computer_game"
+          SET "won" = $2, "turn" = $3
+          WHERE "id" = $1;`;
+          pool.query(gameQueryText, [info.id, 'draw', false]
+          ).then(response => {
+            res.sendStatus(200);
+          }).catch(error => {
+            console.log(error);
+            res.sendStatus(500);
+          });
+        }
+        else {
+          // no one won, keep playing!
+          res.sendStatus(200);
+        }
       }
     }
     else {
