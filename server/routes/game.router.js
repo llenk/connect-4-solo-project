@@ -197,69 +197,7 @@ const availableColumns = (board) => {
     }
   }
   return cols;
-}
-
-async function setWonComputer(id, val, board) {
-  // id is the id of the game
-  // val is the value returned by checkWonHuman
-  // board is the row from SQL, not just the position
-  if (val === 'one') {
-    let gameQueryText = `UPDATE "computer_game"
-      SET "won" = $2, "turn" = $3
-      WHERE "id" = $1;`;
-    let personQueryText = `UPDATE "person"
-      SET "wins_easy_computer" = "wins_easy_computer" + 1
-      WHERE "id" = $1;`;
-    await pool.query(gameQueryText, [id, 'won', false]
-    ).then(async function (response) {
-      await pool.query(personQueryText, [board.player_one]
-      ).then(response => {
-        console.log(false);
-        return true;
-      }).catch(error => {
-        console.log(error);
-      });
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-  else if (val === 'two') {
-    let gameQueryText = `UPDATE "computer_game"
-      SET "won" = $2, "turn" = $3
-      WHERE "id" = $1;`;
-    let personQueryText = `UPDATE "person"
-      SET "losses_easy_computer" = "losses_easy_computer" + 1
-      WHERE "id" = $1;`;
-    await pool.query(gameQueryText, [id, 'lost', false]
-    ).then(async function (response) {
-      await pool.query(personQueryText, [board.player_one]
-      ).then(response => {
-        console.log(false);
-        return true;
-      }).catch(error => {
-        console.log(error);
-      });
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-  else if (val === 'draw') {
-    let gameQueryText = `UPDATE "computer_game"
-      SET "won" = $2, "turn" = $3
-      WHERE "id" = $1;`;
-    await pool.query(gameQueryText, [id, 'draw', false]
-    ).then(response => {
-      console.log(true);
-      return true;
-    }).catch(error => {
-      console.log(error);
-    });
-  }
-  else {
-    console.log(false);
-    return false;
-  }
-}
+} 
 
 router.get('/human', (req, res) => {
   if (req.isAuthenticated) {
