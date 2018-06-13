@@ -40,7 +40,6 @@ function* getComputerBoard(action) {
 function* placeToken(action) {
     try {
         yield call(axios.put, 'api/game/human', action.payload, config);
-        yield put({type: 'GET_BOARD'});
         yield put({type: 'SET_GAME_ERROR', payload: ''});
     } catch (error) {
         let errorArray = error.message.split(' ');
@@ -54,7 +53,6 @@ function* placeToken(action) {
 function* placeTokenCG(action) {
     try {
         yield call(axios.put, 'api/game/computer', action.payload, config);
-        yield put({type: 'GET_COMPUTER_BOARD'});
         yield put({type: 'SET_GAME_ERROR', payload: ''});
     } catch (error) {
         let errorArray = error.message.split(' ');

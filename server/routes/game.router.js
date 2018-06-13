@@ -110,10 +110,10 @@ const setWonHuman = (id, val, board) => {
         ).then(response => {
           console.log('Set winner');
         }).catch(error => {
-          console.log(error, 109);
+          console.log(error);
         });
       }).catch(error => {
-        console.log(error, 112);
+        console.log(error);
       });
       let checkLoserQueryText = `SELECT * FROM "person"
         WHERE "id" = $1;`;
@@ -199,7 +199,7 @@ const availableColumns = (board) => {
   return cols;
 }
 
-setWonComputer = (id, val, board) => {
+async function setWonComputer(id, val, board) {
   // id is the id of the game
   // val is the value returned by checkWonHuman
   // board is the row from SQL, not just the position
@@ -210,11 +210,11 @@ setWonComputer = (id, val, board) => {
     let personQueryText = `UPDATE "person"
       SET "wins_easy_computer" = "wins_easy_computer" + 1
       WHERE "id" = $1;`;
-    pool.query(gameQueryText, [id, 'won', false]
-    ).then(response => {
-      pool.query(personQueryText, [board.player_one]
+    await pool.query(gameQueryText, [id, 'won', false]
+    ).then(async function (response) {
+      await pool.query(personQueryText, [board.player_one]
       ).then(response => {
-        console.log('set true');
+        console.log(false);
         return true;
       }).catch(error => {
         console.log(error);
@@ -230,11 +230,11 @@ setWonComputer = (id, val, board) => {
     let personQueryText = `UPDATE "person"
       SET "losses_easy_computer" = "losses_easy_computer" + 1
       WHERE "id" = $1;`;
-    pool.query(gameQueryText, [id, 'lost', false]
-    ).then(response => {
-      pool.query(personQueryText, [board.player_one]
+    await pool.query(gameQueryText, [id, 'lost', false]
+    ).then(async function (response) {
+      await pool.query(personQueryText, [board.player_one]
       ).then(response => {
-        console.log('set true');
+        console.log(false);
         return true;
       }).catch(error => {
         console.log(error);
@@ -247,16 +247,16 @@ setWonComputer = (id, val, board) => {
     let gameQueryText = `UPDATE "computer_game"
       SET "won" = $2, "turn" = $3
       WHERE "id" = $1;`;
-    pool.query(gameQueryText, [id, 'draw', false]
+    await pool.query(gameQueryText, [id, 'draw', false]
     ).then(response => {
-      console.log('set true');
+      console.log(true);
       return true;
     }).catch(error => {
       console.log(error);
     });
   }
   else {
-    console.log('set false');
+    console.log(false);
     return false;
   }
 }
@@ -500,87 +500,160 @@ router.get('/computer', (req, res) => {
   }
 });
 
-router.put('/computer', (req, res) => {
+router.put('/computer', async function (req, res) {
   if (req.isAuthenticated) {
     let checkQueryText = `SELECT * FROM "computer_game"
       WHERE "player_one" = $1;`;
-    pool.query(checkQueryText, [req.user.id]
-    ).then(checkResponse => {
-      if (checkResponse.rows[0].turn) {
-        let board = checkResponse.rows[0].position;
-        let col = board[req.body.col];
+    let checkResponse = await pool.query(checkQueryText, [req.user.id]);
+    // info is the whole row in SQL
+    // board is just the position
+    let info = checkResponse.rows[0];
+    console.log(info);
+    let board = info.position;
+    let col = board[req.body.col];
+    let last = -1;
+    for (let i = 0; i < col.length; i++) {
+      if (col[i] == '') {
+        last = i;
+      }
+    }
+    // last is the zero-based index of the bottom empty spot
+    // it is -1 if the column is full
+    if (info.turn && last > 0 && info.won.length == 0) {
+      board[req.body.col][last] = 'x';
+      console.log('placing human token:', req.body.col, last);
+      let updateQueryText = `UPDATE "computer_game"
+        SET "position" = $2, "turn" = $3
+        WHERE "player_one" = $1;`;
+      await pool.query(updateQueryText, [req.user.id, board, false]);
+      let result = checkWonHuman({ position: board });
+      console.log(result);
+      if (result.length > 0) {
+        // game is over, human won
+        let gameQueryText = `UPDATE "computer_game"
+          SET "won" = $2, "turn" = $3
+          WHERE "id" = $1;`;
+        let personQueryText = `UPDATE "person"
+          SET "wins_easy_computer" = "wins_easy_computer" + 1
+          WHERE "id" = $1;`;
+        pool.query(gameQueryText, [info.id, 'won', false]
+        ).then(response => {
+          pool.query(personQueryText, [info.player_one]
+          ).then(response => {
+            res.sendStatus(200);
+          }).catch(error => {
+            console.log(error);
+            res.sendStatus(500);
+          });
+        }).catch(error => {
+          console.log(error);
+          res.sendStatus(500);
+        });
+      }
+      else {
+        // game is not over 
+        let availableCols = availableColumns(board);
+        let chosenColumn = availableCols[Math.floor(Math.random() * availableCols.length)];
+        col = board[chosenColumn];
         let last = -1;
         for (let i = 0; i < col.length; i++) {
           if (col[i] == '') {
             last = i;
           }
         }
-        last++;
-        // last will be the one-based index of the bottom empty spot
-        // unless the row is full, in which case it will be zero
-        if (last > 0) {
-          // place token
-          let addQueryText = `UPDATE "computer_game"
-            SET "position"[$2][$3] = $4, "turn" = $5
-            WHERE "player_one" = $1;`;
-          pool.query(addQueryText, [req.user.id, req.body.col + 1, last, 'x', false]
-          ).then(response => {
-            pool.query(checkQueryText, [req.user.id]
-            ).then(boardResponse => {
-              boardResponse = boardResponse.rows[0];
-              if (setWonComputer(boardResponse.id, checkWonHuman(boardResponse), boardResponse)) {
-                let cols = availableColumns(boardResponse.position);
-                // col is the number of the column in the cols array, not the column itself
-                // cols[col] is the number of the column
-                let col = Math.floor(Math.random() * cols.length);
-                last = -1;
-                let column = boardResponse.position[cols[col]];
-                console.log('WHAT');
-                for (let i = 0; i < boardResponse.position[cols[col]].length; i++) {
-                  if (boardResponse.position[cols[col]][i] == '') {
-                    last = i;
-                  }
-                }
-                last++;
-                pool.query(addQueryText, [req.user.id, cols[col] + 1, last, 'o', true]
-                ).then(response => {
-                  console.log('hi');
-                  res.sendStatus(200);
-                }).catch(error => {
-                  console.log(error);
-                  res.sendStatus(500);
-                });
-              }
-              else {
-                res.sendStatus(200);
-              }
-            }).catch(error => {
-              console.log(error);
-              res.sendStatus(500);
-            });
-          }).catch(error => {
-            console.log(error);
-            res.sendStatus(500);
-          });
-        }
-        else {
-          // send error if column is full
-          res.sendStatus(409);
-        }
-      } else {
-        console.log('hi')
-        res.sendStatus(403);
+        console.log('placing computer token:', chosenColumn, last);
+        board[chosenColumn][last] = 'o';
+        await pool.query(updateQueryText, [req.user.id, board, true]);
+        res.sendStatus(200);
       }
-    }).catch(error => {
-      console.log(error);
-      res.sendStatus(500);
-    });
-  } else {
+    }
+    else {
+      res.sendStatus(409);
+    }
+  }
+  else {
     res.sendStatus(403);
   }
 });
 
-module.exports = router;
+// router.put('/computer', (req, res) => {
+//   if (req.isAuthenticated) {
+//     let checkQueryText = `SELECT * FROM "computer_game"
+//       WHERE "player_one" = $1;`;
+//     pool.query(checkQueryText, [req.user.id]
+//     ).then(checkResponse => {
+//       if (checkResponse.rows[0].turn) {
+//         let board = checkResponse.rows[0].position;
+//         let col = board[req.body.col];
+//         let last = -1;
+//         for (let i = 0; i < col.length; i++) {
+//           if (col[i] == '') {
+//             last = i;
+//           }
+//         }
+//         last++;
+//         // last will be the one-based index of the bottom empty spot
+//         // unless the row is full, in which case it will be zero
+//         if (last > 0) {
+//           // place token
+//           let addQueryText = `UPDATE "computer_game"
+//             SET "position"[$2][$3] = $4, "turn" = $5
+//             WHERE "player_one" = $1;`;
+//           pool.query(addQueryText, [req.user.id, req.body.col + 1, last, 'x', false]
+//           ).then(response => {
+//             pool.query(checkQueryText, [req.user.id]
+//             ).then(boardResponse => {
+//               boardResponse = boardResponse.rows[0];
+//               if (!setWonComputer(boardResponse.id, checkWonHuman(boardResponse), boardResponse)) {
+//                 let cols = availableColumns(boardResponse.position);
+//                 // col is the number of the column in the cols array, not the column itself
+//                 // cols[col] is the number of the column
+//                 let col = Math.floor(Math.random() * cols.length);
+//                 last = -1;
+//                 let column = boardResponse.position[cols[col]];
+//                 console.log('WHAT');
+//                 for (let i = 0; i < boardResponse.position[cols[col]].length; i++) {
+//                   if (boardResponse.position[cols[col]][i] == '') {
+//                     last = i;
+//                   }
+//                 }
+//                 last++;
+//                 pool.query(addQueryText, [req.user.id, cols[col] + 1, last, 'o', true]
+//                 ).then(response => {
+//                   console.log('hi');
+//                   res.sendStatus(200);
+//                 }).catch(error => {
+//                   console.log(error);
+//                   res.sendStatus(500);
+//                 });
+//               }
+//               else {
+//                 res.sendStatus(200);
+//               }
+//             }).catch(error => {
+//               console.log(error);
+//               res.sendStatus(500);
+//             });
+//           }).catch(error => {
+//             console.log(error);
+//             res.sendStatus(500);
+//           });
+//         }
+//         else {
+//           // send error if column is full
+//           res.sendStatus(409);
+//         }
+//       } else {
+//         console.log('hi')
+//         res.sendStatus(403);
+//       }
+//     }).catch(error => {
+//       console.log(error);
+//       res.sendStatus(500);
+//     });
+//   } else {
+//     res.sendStatus(403);
+//   }
+// });
 
-// testing data:
-// {{"","","","","",o},{"","","",x,x,x},{"","","",o,o,o},{"","","","",x,x},{"","","","",o,x},{"","","",o,x,o},{"","","","",o,x}}
+module.exports = router;
