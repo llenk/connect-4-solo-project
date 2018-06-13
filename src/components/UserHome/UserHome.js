@@ -47,6 +47,10 @@ class UserHome extends Component {
     this.props.dispatch({type: 'COMPUTER_GAME_START', payload: this.props.user.userInfo.id});
   }
 
+  hardComputerGame = () => {
+    this.props.dispatch({type: 'HARD_COMPUTER_GAME_START', payload: this.props.user.userInfo.id});
+  }
+
   render() {
     let content = null;
     if (this.props.user.userInfo) {
@@ -77,6 +81,12 @@ class UserHome extends Component {
                 </p>
                 <p>
                   Losses against an easy computer: {this.props.user.userInfo.losses_easy_computer}
+                </p>
+                <p>
+                  Wins against a hard computer: {this.props.user.userInfo.wins_hard_computer}
+                </p>
+                <p>
+                  Losses against a hard computer: {this.props.user.userInfo.losses_hard_computer}
                 </p>
                 <p>
                   Wins against a human: {this.props.user.userInfo.wins_human}
@@ -112,6 +122,9 @@ class UserHome extends Component {
                 <br />
                 <Button variant="contained" className="butt" onClick={this.computerGame}>
                   Play against easy computer
+                </Button>
+                <Button variant="contained" className="butt" onClick={this.hardComputerGame}>
+                  Play against hard computer
                 </Button>
               </div>
             </Grid>

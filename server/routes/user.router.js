@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/', rejectUnauthenticated, (req, res) => {
   // Send back user object from database
   let queryText = `SELECT 
-    "id", "username", "wins_human", "losses_human", "wins_easy_computer", "losses_easy_computer"
+    "id", "username", "wins_human", "losses_human", "wins_easy_computer", "losses_easy_computer", "wins_hard_computer", "losses_hard_computer"
     FROM "person"
     WHERE "id" = $1`;
   pool.query(queryText, [req.user.id]

@@ -197,7 +197,7 @@ const availableColumns = (board) => {
     }
   }
   return cols;
-} 
+}
 
 router.get('/human', (req, res) => {
   if (req.isAuthenticated) {
@@ -402,10 +402,21 @@ router.post('/computer', (req, res) => {
     pool.query(checkQueryText, [req.user.id]
     ).then(response => {
       if (response.rowCount == 0) {
-        let addQueryText = `INSERT INTO "computer_game" 
-          ("position", "player_one")
-          VALUES ($1, $2);`;
-        pool.query(addQueryText, [emptyBoard, req.user.id]
+        let addQueryText, addQueryArray;
+        if (req.body.type == 'hard') {
+          addQueryText = `INSERT INTO "computer_game" 
+            ("position", "player_one", "hard")
+            VALUES ($1, $2, $3);`;
+          addQueryArray = [emptyBoard, req.user.id, true];
+        }
+        else {
+          addQueryText = `INSERT INTO "computer_game" 
+            ("position", "player_one")
+            VALUES ($1, $2);`;
+          addQueryArray = [emptyBoard, req.user.id];
+        }
+        console.log(addQueryText, addQueryArray);
+        pool.query(addQueryText, addQueryArray
         ).then(response => {
           res.sendStatus(200);
         }).catch(error => {

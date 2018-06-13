@@ -93,6 +93,19 @@ function* computerGameStart(action) {
     }
 }
 
+function* hardComputerGameStart(action) {
+    try {
+        yield call(axios.post, '/api/game/computer', {type: 'hard'}, config);
+        yield put({type: 'GET_COMPUTER_BOARD'});
+    } catch (error) {
+        let errorArray = error.message.split(' ');
+        let status = parseInt(errorArray[errorArray.length - 1], 10);
+        if (status === 409) {
+            yield put({type: 'SET_LOAD_ERROR', payload: 'You already have a game in progress. Try navigating to /game'})
+        }
+    }
+}
+
 function* gameSaga() {
     yield takeEvery('HUMAN_GAME_START', humanGameStart);
     yield takeEvery('GET_BOARD', getHumanBoard);
@@ -102,6 +115,7 @@ function* gameSaga() {
     yield takeEvery('COMPUTER_GAME_START', computerGameStart);
     yield takeEvery('GET_COMPUTER_BOARD', getComputerBoard);
     yield takeEvery('DELETE_COMPUTER_GAME', deleteComputerGame);
+    yield takeEvery('HARD_COMPUTER_GAME_START', hardComputerGameStart);
 }
 
 export default gameSaga;
