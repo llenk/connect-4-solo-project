@@ -457,7 +457,7 @@ router.put('/computer', async function (req, res) {
     }
     // last is the zero-based index of the bottom empty spot
     // it is -1 if the column is full
-    if (info.turn && last > 0 && info.won.length == 0) {
+    if (info.turn && last >= 0 && info.won.length == 0) {
       board[req.body.col][last] = 'x';
       console.log('placing human token:', req.body.col, last);
       let updateQueryText = `UPDATE "computer_game"
