@@ -568,7 +568,7 @@ router.put('/computer', async function (req, res) {
 
 router.delete('/computer', (req, res) => {
   if (req.isAuthenticated) {
-    let queryText = `DELETE FROM "human_game" WHERE "player_one"=$1;`;
+    let queryText = `DELETE FROM "computer_game" WHERE "player_one"=$1;`;
     pool.query(queryText, [req.user.id]
     ).then(response => {
       res.sendStatus(200);

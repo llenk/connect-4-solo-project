@@ -104,7 +104,7 @@ class GamePlay extends Component {
   }
 
   handlePlayAgain = () => {
-    this.props.dispatch({type: 'DELETE_GAME'});
+    this.props.dispatch({type: 'DELETE_COMPUTER_GAME'});
   } 
 
   placeToken = (col) => (event) => {

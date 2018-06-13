@@ -72,6 +72,14 @@ function* removePlayerFromGame(action) {
     }
 }
 
+function* deleteComputerGame(action) {
+    try {
+        yield call(axios.delete, '/api/game/computer', config);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 function* computerGameStart(action) {
     try {
         yield call(axios.post, '/api/game/computer', config);
@@ -93,6 +101,7 @@ function* gameSaga() {
     yield takeEvery('DELETE_GAME', removePlayerFromGame);
     yield takeEvery('COMPUTER_GAME_START', computerGameStart);
     yield takeEvery('GET_COMPUTER_BOARD', getComputerBoard);
+    yield takeEvery('DELETE_COMPUTER_GAME', deleteComputerGame);
 }
 
 export default gameSaga;
