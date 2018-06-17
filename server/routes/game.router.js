@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
+const pickMove = require('../modules/solver');
 
 const computerID = process.env.COMPUTER_ID;
 
@@ -483,9 +484,16 @@ router.put('/computer', async function (req, res) {
         let gameQueryText = `UPDATE "computer_game"
           SET "won" = $2, "turn" = $3
           WHERE "id" = $1;`;
-        let personQueryText = `UPDATE "person"
-          SET "wins_easy_computer" = "wins_easy_computer" + 1
+        if (info.hard) {
+          let personQueryText = `UPDATE "person"
+          SET "wins_hard_computer" = "wins_hard_computer" + 1
           WHERE "id" = $1;`;
+        }
+        else {
+          let personQueryText = `UPDATE "person"
+            SET "wins_easy_computer" = "wins_easy_computer" + 1
+            WHERE "id" = $1;`;
+        }
         pool.query(gameQueryText, [info.id, 'won', false]
         ).then(response => {
           pool.query(personQueryText, [info.player_one]
@@ -515,8 +523,15 @@ router.put('/computer', async function (req, res) {
       }
       else {
         // game is not over 
-        let availableCols = availableColumns(board);
-        let chosenColumn = availableCols[Math.floor(Math.random() * availableCols.length)];
+        if (info.hard) {
+          let chosenColumn = await pickMove(info.position);
+          console.log('noooooo');
+          console.log(chosenColumn);
+        }
+        else {
+          let availableCols = availableColumns(board);
+          let chosenColumn = availableCols[Math.floor(Math.random() * availableCols.length)];
+        }
         col = board[chosenColumn];
         let last = -1;
         for (let i = 0; i < col.length; i++) {
@@ -524,6 +539,7 @@ router.put('/computer', async function (req, res) {
             last = i;
           }
         }
+
         console.log('placing computer token:', chosenColumn, last);
         board[chosenColumn][last] = 'o';
         info.position_string += (chosenColumn);
@@ -534,9 +550,16 @@ router.put('/computer', async function (req, res) {
           let gameQueryText = `UPDATE "computer_game"
               SET "won" = $2, "turn" = $3
               WHERE "id" = $1;`;
-          let personQueryText = `UPDATE "person"
+          if (info.hard) {
+            let personQueryText = `UPDATE "person"
+              SET "losses_hard_computer" = "losses_hard_computer" + 1
+              WHERE "id" = $1;`;
+          }
+          else {
+            let personQueryText = `UPDATE "person"
               SET "losses_easy_computer" = "losses_easy_computer" + 1
               WHERE "id" = $1;`;
+          }
           pool.query(gameQueryText, [info.id, 'lost', false]
           ).then(function (response) {
             pool.query(personQueryText, [info.player_one]

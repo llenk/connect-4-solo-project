@@ -50,20 +50,13 @@ def calc_score(game):
   return (42 - game['moves'])
   
 # set up variables
-# arg1 = int(sys.argv[1])
-# arg2 = int(sys.argv[2])
-# arg3Temp = sys.argv[3].split(',')
-# arg4 = int(sys.argv[4])
-# arg3 = []
-# for num in arg3Temp:
-#   arg3.append(int(num))
-
-# arg1 = 4502306619525
-# arg2 = 138269737226
-arg1 = 93804814454026
-arg2 = 185445233394309
-arg3 = [ 4, 12, 19, '', 33, '', '' ]
-arg4 = 37
+arg1 = int(sys.argv[1])
+arg2 = int(sys.argv[2])
+arg3Temp = sys.argv[3].split(',')
+arg4 = int(sys.argv[4])
+arg3 = []
+for num in arg3Temp:
+  arg3.append(int(num))
 arg5 = ''
 
 indices = range(7)
@@ -82,15 +75,18 @@ def check_solutions(game, its):
   scores = [0,0,0,0,0,0,0]
   its += 1
   for num in indices:
-    print (game)
+    
     try: 
       new_game = make_move(game, game['moves'] & 1, num).copy()
       if (is_won(new_game['board_' + str(game['moves'] & 1)]) or is_draw(new_game['board_0'], new_game['board_1'])):
         scores[num] = calc_score(new_game)
-        game = undo_move(game, str(game['moves'] & 1))
+        game = undo_move(new_game, str(new_game['moves'] & 1))
 
       else:
-        scores[num] = max(check_solutions(new_game, its))
+        if (new_game['moves'] & 1):
+          scores[num] = max(check_solutions(new_game, its))
+        else:
+          scores[num] = -max(check_solutions(new_game, its))
       
     except TypeError:
       2+2
@@ -100,26 +96,14 @@ def check_solutions(game, its):
 
 
 
-print(game)
-print(check_solutions(game, its_var))
-# try: 
-#   make_move(game, game['moves'] & 1 , 2)
-#   print(game)
-# except TypeError:
-#   print(game)
-# # print(game)
+sols = check_solutions(game, its_var)
+max = -50
+ret = 3
+for i in indices:
+  if (sols[i] > max):
+    ret = i
+    max = sols[i]
 
+print(ret)
 
-# print(is_draw(game['board_0'], game['board_1']))
-
-
-test = arg1 & arg2
-
-
-
-one = is_won(game['board_1'])
-two = is_won(arg2)
-
-
-# print(game)
 sys.stdout.flush()
