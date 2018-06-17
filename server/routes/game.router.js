@@ -470,7 +470,7 @@ router.put('/computer', async function (req, res) {
     // it is -1 if the column is full
     if (info.turn && last >= 0 && info.won.length == 0) {
       board[req.body.col][last] = 'x';
-      info.position_string += (req.body.col+1);
+      info.position_string += (req.body.col);
       console.log('placing human token:', req.body.col, last);
       let updateQueryText = `UPDATE "computer_game"
         SET "position" = $2, "turn" = $3, "position_string" = $4
@@ -526,7 +526,7 @@ router.put('/computer', async function (req, res) {
         }
         console.log('placing computer token:', chosenColumn, last);
         board[chosenColumn][last] = 'o';
-        info.position_string += (chosenColumn + 1);
+        info.position_string += (chosenColumn);
         await pool.query(updateQueryText, [req.user.id, board, true, info.position_string]);
         let result = checkWonHuman({ position: board });
         if (result == 'two') {
