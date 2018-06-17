@@ -2,13 +2,13 @@ const spawn = require("child_process").spawn;
 
 
 const arg = [
-  ['', '', 'o', 'x', 'x', 'x'],
-  ['', 'o', 'o', 'x', 'o', 'x'],
-  ['o', 'o', 'x', 'x', 'x', 'o'],
-  ['', '', '', '', '', 'x'],
   ['', '', 'x', 'o', 'x', 'o'],
-  ['', 'o', 'x', 'o', 'o', 'x'],
+  ['', 'x', 'x', 'o', 'x', 'o'],
+  ['', 'x', 'o', 'o', 'x', 'x'],
+  ['o', 'x', 'o', 'x', 'o', 'x'],
   ['', 'o', 'x', 'o', 'x', 'o'],
+  ['x', 'o', 'x', 'o', 'x', 'o'],
+  ['o', 'x', 'o', 'x', 'o', 'x'],
 ];
 
 let base = 1;
@@ -36,10 +36,10 @@ for (let i = 0; i < arg.length; i++) {
 
 console.log(arg1, arg2, arg3);
 
-const pythonProcess = spawn('python', ["solver.py", arg1, arg2, arg3, arg4]);
+// const pythonProcess = spawn('python', ["solver.py", arg1, arg2, arg3, arg4]);
 
 
-pythonProcess.stdout.on('data', function (data) {
-  console.log('data: ', data.toString());
+// pythonProcess.stdout.on('data', function (data) {
+//   console.log('data: ', data.toString());
 
-});
+// });
