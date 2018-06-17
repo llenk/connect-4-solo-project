@@ -30,7 +30,7 @@ class GamePlay extends Component {
     if (this.props.user.userInfo) {
       setTimeout(() => {
         this.props.dispatch({ type: 'GET_BOARD' });
-      }, 900);
+      }, 600);
     }
   }
 
