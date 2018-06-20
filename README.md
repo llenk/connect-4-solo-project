@@ -60,7 +60,7 @@ CREATE TABLE computer_game (
 ![your turn](documentation/images/your-turn.png)
 
 ### You Won
-![you won](doumentation/images/you-won.png)
+![you won](documentation/images/you-won.png)
 
 ## Documentation
 
