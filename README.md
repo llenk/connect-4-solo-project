@@ -53,6 +53,15 @@ CREATE TABLE computer_game (
 ```
 ## Screen Shots
 
+### Landing Page
+![landing page](documentation/images/landing-page.png)
+
+### Your Turn!
+![your turn](documentation/images/your-turn.png)
+
+### You Won
+![you won](doumentation/images/you-won.png)
+
 ## Documentation
 
 ### Completed Features
