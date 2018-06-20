@@ -1,7 +1,15 @@
-# Express/Passport with React
-This version uses React to control the login requests and redirection in coordination with client-side routing.
+# Connect 4
+This app allows the user to log in, play Connect 4 against the computer, or play against another human logged in on another account. It also saves the user's win/loss stats, and displays them on the landing page. 
 
-We **STONGLY** recommend following these instructions carefully. It's a lot, and will take some time to set up, but your life will be much easier this way in the long run.
+## Built With
+React
+Redux
+Redux Sagas
+Node.js
+PostgreSQL
+Passport
+Express
+Material-UI
 
 ## Prerequisites
 
@@ -11,69 +19,51 @@ Before you get started, make sure you have the following software installed on y
 - [PostrgeSQL](https://www.postgresql.org/)
 - [Nodemon](https://nodemon.io/)
 
-## Create database and table
+## Installing
 
-Create a new database called `prime_app` and create a `person` table:
+Create a new database called `connect_4` and create a `person` table:
 
 ```SQL
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
     username VARCHAR (80) UNIQUE NOT NULL,
-    password VARCHAR (1000) NOT NULL
+    password VARCHAR (1000) NOT NULL,
+    wins_human INTEGER DEFAULT 0,
+    losses_human INTEGER DEFAULT 0,
+    wins_easy_computer INTEGER DEFAULT 0,
+    losses_easy_computer INTEGER DEFAULT 0
+);
+CREATE TABLE human_game (
+    id SERIAL PRIMARY KEY, 
+    position VARCHAR (2)[],
+    player_one INTEGER REFERENCES person(id),
+    player_two INTEGER REFERENCES person(id),
+    turn INTEGER REFERENCES person(id),
+    won VARCHAR (10) DEFAULT ''
+);
+CREATE TABLE computer_game (
+    id SERIAL PRIMARY KEY, 
+    position VARCHAR (2)[],
+    player_one INTEGER REFERENCES person(id),
+    turn BOOLEAN DEFAULT true,
+    won VARCHAR (10) DEFAULT '',
+    hard BOOLEAN DEFAULT false,
+    position_string VARCHAR (42) DEFAULT ''
 );
 ```
+## Screen Shots
 
-If you would like to name your database something else, you will need to change `prime_app` to the name of your new database name in `server/modules/pool.js`
+## Documentation
 
-## Download (Don't Clone) This Repository
+### Completed Features
 
-* Don't Fork or Clone. Instead, click the `Clone or Download` button and select `Download Zip`.
-* Unzip the project and start with the code in that folder.
-* Create a new GitHub project and push this code to the new repository.
+- [x] Landing page with stats and redirect to new game
+- [x] Play against another human
+- [x] Play against a computer that randomly places tokens
 
-## Development Setup Instructions
+### Next Steps
 
-* Run `npm install`
-* Create a `.env` file at the root of the project and paste this line into the file:
-    ```
-    SERVER_SESSION_SECRET=superDuperSecret
-    ```
-    While you're in your new `.env` file, take the time to replace `superDuperSecret` with some long random string like `25POUbVtx6RKVNWszd9ERB9Bb6` to keep your application secure. Here's a site that can help you: [https://passwordsgenerator.net/](https://passwordsgenerator.net/). If you don't do this step, create a secret with less than eight characters, or leave it as `superDuperSecret`, you will get a warning.
-* Start postgres if not running already by using `brew services start postgresql`
-* Run `npm run server`
-* Run `npm run client`
-* Navigate to `localhost:3000`
-
-## Debugging
-
-To debug, you will need to run the client-side separately from the server. Start the client by running the command `npm run dev:client`. Start the debugging server by selecting the Debug button.
-
-![VSCode Toolbar](documentation/images/vscode-toolbar.png)
-
-Then make sure `Launch Program` is selected from the dropdown, then click the green play arrow.
-
-![VSCode Debug Bar](documentation/images/vscode-debug-bar.png)
-
-## Linting
-
-The Airbnb ESLint for react is a part of this project. If you would like to take advantage of this in VS Code, you can add the `ESLint` extension. Click the `Extensions` button (the button right below the `Debug`) and search for `ESLint`. Click `install` for the first result and then click `Reload`. Then it should be all set up!
-
-![VSCode Toolbar](documentation/images/vscode-toolbar.png)
-
-## Production Build
-
-This is the build Heroku will run, but during development, you will likely not need to use it.
-
-* Start postgres if not running already by using `brew services start postgresql`
-* Run `npm start`
-* Navigate to `localhost:5000`
-
-## Lay of the Land
-
-* `src/` contains the React application
-* `public/` contains static assets for the client-side
-* `build/` after you build the project, contains the transpiled code from `src/` and `public/` that will be viewed on the production site
-* `server/` contains the Express App
+- [ ] Properly connect python script that solves game to place winning tokens
 
 ## Deployment
 
