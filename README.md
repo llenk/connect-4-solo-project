@@ -21,7 +21,7 @@ Before you get started, make sure you have the following software installed on y
 
 ## Installing
 
-Create a new database called `connect_4` and create a `person` table:
+Create a new database called `connect_4` and create the following tables:
 
 ```SQL
 CREATE TABLE person (
@@ -51,6 +51,13 @@ CREATE TABLE computer_game (
     position_string VARCHAR (42) DEFAULT ''
 );
 ```
+
+Create a .env file in the main folder, and in one line, put `SERVER_SESSION_SECRET=` and then a long, random string. 
+
+You'll need a computer account, which can just be created from the register user page. This user should never play a game. Add `COMPUTER_ID=`, and the id of the computer account. This will be `1` if that was the first account created.  
+
+To start the development server, run `npm run server` in one terminal tab, and `npm run client` in another. 
+
 ## Screen Shots
 
 ### Landing Page
