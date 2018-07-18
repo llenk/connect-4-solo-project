@@ -54,7 +54,7 @@ CREATE TABLE computer_game (
 
 Create a .env file in the main folder, and in one line, put `SERVER_SESSION_SECRET=` and then a long, random string. 
 
-You'll need a computer account, which can just be created from the register user page. This user should never play a game. Add `COMPUTER_ID=`, and the id of the computer account. This will be `1` if that was the first account created.  
+You'll need a computer account, which can just be created from the register user page. This user should never play a game. Add `COMPUTER_ID=` to the .env file, and the id of the computer account. This will be `1` if that was the first account created.  
 
 To start the development server, run `npm run server` in one terminal tab, and `npm run client` in another. 
 
